@@ -3,9 +3,9 @@
 import argparse
 import os
 import json
-from voc import parse_voc_annotation
-from generator import BatchGenerator
-from utils.utils import normalize, evaluate
+from Custom.voc import parse_voc_annotation
+from Custom.generator import BatchGenerator
+from Custom.utils.utils import normalize, evaluate
 from keras.models import load_model
 
 

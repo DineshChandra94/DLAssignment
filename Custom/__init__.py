@@ -2,16 +2,16 @@ import os
 import re
 import numpy as np
 import json
-from voc import parse_voc_annotation
-from yolo import create_yolov3_model, dummy_loss
+from Custom.voc import parse_voc_annotation
+from Custom.yolo import create_yolov3_model, dummy_loss
 from YOLOv3.models import yolo_main
-from generator import BatchGenerator
-from utils.utils import normalize, evaluate, makedirs
+from Custom.generator import BatchGenerator
+from Custom.utils.utils import normalize, evaluate, makedirs
 from keras.callbacks import ReduceLROnPlateau
 from keras.optimizers import Adam
-from callbacks import CustomModelCheckpoint, CustomTensorBoard
-from utils.multi_gpu_model import multi_gpu_model
-from gen_anchors import generateAnchors
+from Custom.callbacks import CustomModelCheckpoint, CustomTensorBoard
+from Custom.utils.multi_gpu_model import multi_gpu_model
+from Custom.gen_anchors import generateAnchors
 import tensorflow as tf
 from keras.models import load_model, Input
 from keras.callbacks import TensorBoard

@@ -2,8 +2,8 @@ import cv2
 import copy
 import numpy as np
 from keras.utils import Sequence
-from utils.bbox import BoundBox, bbox_iou
-from utils.image import apply_random_scale_and_crop, random_distort_image, random_flip, correct_bounding_boxes
+from Custom.utils.bbox import BoundBox, bbox_iou
+from Custom.utils.image import apply_random_scale_and_crop, random_distort_image, random_flip, correct_bounding_boxes
 
 class BatchGenerator(Sequence):
     def __init__(self, 

@@ -1,7 +1,7 @@
 import random
 import numpy as np
 
-from voc import parse_voc_annotation
+from Custom.voc import parse_voc_annotation
 
 
 def IOU(ann, centroids):
