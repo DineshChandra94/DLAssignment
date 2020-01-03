@@ -34,7 +34,7 @@ def parse_voc_annotation(ann_dir, img_dir, cache_name, labels=[]):
                     
                     for attr in list(elem):
                         if 'name' in attr.tag:
-                            obj['name'] = attr.text
+                            obj['name'] = attr.text.split('_')[1]
 
                             if obj['name'] in seen_labels:
                                 seen_labels[obj['name']] += 1
@@ -65,3 +65,9 @@ def parse_voc_annotation(ann_dir, img_dir, cache_name, labels=[]):
             pickle.dump(cache, handle, protocol=pickle.HIGHEST_PROTOCOL)    
                         
     return all_insts, seen_labels
+
+#
+#ann_dir = r'C:\Users\DC44819\Downloads\NCERT\DLAssignment\DLAssignment\data\train\annotations'
+#img_dir = r'C:\Users\DC44819\Downloads\NCERT\DLAssignment\DLAssignment\data\train\images'
+#cache_name = r'C:\Users\DC44819\Downloads\NCERT\DLAssignment\hello.pkl'
+#x = parse_voc_annotation(ann_dir, img_dir, cache_name)
