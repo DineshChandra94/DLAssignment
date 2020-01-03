@@ -3,9 +3,9 @@
 import argparse
 import os
 import json
-from imageai.Detection.Custom.voc import parse_voc_annotation
-from imageai.Detection.Custom.generator import BatchGenerator
-from imageai.Detection.Custom.utils.utils import normalize, evaluate
+from voc import parse_voc_annotation
+from generator import BatchGenerator
+from utils.utils import normalize, evaluate
 from keras.models import load_model
 
 
