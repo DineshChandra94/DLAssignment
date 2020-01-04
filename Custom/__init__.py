@@ -1,18 +1,17 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = '0'
 import re
 import numpy as np
 import json
-from Custom.voc import parse_voc_annotation
-from Custom.yolo import create_yolov3_model, dummy_loss
-from YOLOv3.models import yolo_main
-from Custom.generator import BatchGenerator
-from Custom.utils.utils import normalize, evaluate, makedirs
+from imageai.Detection.Custom.voc import parse_voc_annotation
+from imageai.Detection.Custom.yolo import create_yolov3_model, dummy_loss
+from imageai.Detection.YOLOv3.models import yolo_main
+from imageai.Detection.Custom.generator import BatchGenerator
+from imageai.Detection.Custom.utils.utils import normalize, evaluate, makedirs
 from keras.callbacks import ReduceLROnPlateau
 from keras.optimizers import Adam
-from Custom.callbacks import CustomModelCheckpoint, CustomTensorBoard
-from Custom.utils.multi_gpu_model import multi_gpu_model
-from Custom.gen_anchors import generateAnchors
+from imageai.Detection.Custom.callbacks import CustomModelCheckpoint, CustomTensorBoard
+from imageai.Detection.Custom.utils.multi_gpu_model import multi_gpu_model
+from imageai.Detection.Custom.gen_anchors import generateAnchors
 import tensorflow as tf
 from keras.models import load_model, Input
 from keras.callbacks import TensorBoard
@@ -149,7 +148,7 @@ class DetectionModelTrainer:
         # let it as a string separated by commas
         self.__train_gpus = ','.join([str(gpu) for gpu in train_gpus])
 
-    def setTrainConfig(self,  class_json_path, batch_size=4, num_experiments=100, train_from_pretrained_model=""):
+    def setTrainConfig(self,  object_names_array, batch_size=4, num_experiments=100, train_from_pretrained_model=""):
 
         """
 
@@ -170,13 +169,7 @@ class DetectionModelTrainer:
         self.__model_anchors, self.__inference_anchors = generateAnchors(self.__train_annotations_folder,
                                                                          self.__train_images_folder,
                                                                          self.__train_cache_file, self.__model_labels)
-        
-        object_names_array = []
-        with open(class_json_path) as f:
-            data = json.load(f)
-        for i in data:
-            object_names_array.append(data[i])
-        object_names_array = list(set(object_names_array))
+
         self.__model_labels = sorted(object_names_array)
         self.__num_objects = len(object_names_array)
 
@@ -648,8 +641,8 @@ class CustomObjectDetection:
             self.__model.load_weights(self.__model_path)
 
     def detectObjectsFromImage(self, input_image="", output_image_path="", input_type="file", output_type="file",
-                               extract_detected_objects=False, minimum_percentage_probability=50, nms_treshold=0.4,
-                               display_percentage_probability=True, display_object_name=True, thread_safe=False, save_outputz_img = False):
+                               extract_detected_objects=False, minimum_percentage_probability=70, nms_treshold=0.5,
+                               display_percentage_probability=True, display_object_name=True, thread_safe=False):
 
         """
 
@@ -730,18 +723,18 @@ class CustomObjectDetection:
                 # then output_image_folder is  path/to/the/output/image
                 # let's check if it is in the appropriated format soon to fail early
                 output_image_folder, n_subs = re.subn(r'\.(?:jpe?g|png|tif|webp|PPM|PGM)$', '', output_image_path, flags=re.I)
-                if n_subs == 0: pass
+                if n_subs == 0:
                     # if no substitution was done, the given output_image_path is not in a supported format,
                     # raise an error
-#                    raise ValueError("output_image_path must be the path where to write the image. "
-#                                     "Therefore it must end as one the following: "
-#                                     "'.jpg', '.png', '.tif', '.webp', '.PPM', '.PGM'. {} found".format(output_image_path))
-#                elif extract_detected_objects:
-#                    # Results must be written as files and need to extract detected objects as images,
-#                    # let's create a folder to store the object's images
-#                    objects_dir = output_image_folder + "-objects"
-#
-#                    os.makedirs(objects_dir, exist_ok=True)
+                    raise ValueError("output_image_path must be the path where to write the image. "
+                                     "Therefore it must end as one the following: "
+                                     "'.jpg', '.png', '.tif', '.webp', '.PPM', '.PGM'. {} found".format(output_image_path))
+                elif extract_detected_objects:
+                    # Results must be written as files and need to extract detected objects as images,
+                    # let's create a folder to store the object's images
+                    objects_dir = output_image_folder + "-objects"
+
+                    os.makedirs(objects_dir, exist_ok=True)
 
             self.__object_threshold = minimum_percentage_probability / 100
             self.__nms_threshold = nms_treshold
@@ -814,17 +807,18 @@ class CustomObjectDetection:
 
                         splitted_image = image_frame[each_object["box_points"][1]:each_object["box_points"][3],
                                                      each_object["box_points"][0]:each_object["box_points"][2]]
-                        if output_type == "file": pass
-#                            splitted_image_path = os.path.join(objects_dir, "{}-{:05d}.jpg".format(each_object["name"],cnt))
+                        if output_type == "file":
+                            splitted_image_path = os.path.join(objects_dir, "{}-{:05d}.jpg".format(each_object["name"],
+                                                                                                   cnt))
 
-#                            cv2.imwrite(splitted_image_path, splitted_image)
-#                            detected_objects_image_array.append(splitted_image_path)
+                            cv2.imwrite(splitted_image_path, splitted_image)
+                            detected_objects_image_array.append(splitted_image_path)
                         elif output_type == "array":
                             detected_objects_image_array.append(splitted_image.copy())
 
-                if output_type == "file":pass
+                if output_type == "file":
                     # we already validated that the output_image_path is a supported by OpenCV one
-#                    cv2.imwrite(output_image_path, drawn_image)
+                    cv2.imwrite(output_image_path, drawn_image)
 
                 if extract_detected_objects:
                     if output_type == "file":
