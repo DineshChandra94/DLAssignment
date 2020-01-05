@@ -965,7 +965,7 @@ class CustomDetectionUtils:
         # enumerate all boxes
         for box in boxes:
             print(box)
-            i = np.argmax(box.classes.values)
+            i = np.argmax(box.classes)
             v_boxes.append(box)
             v_labels.append(box.labels[i])
             
