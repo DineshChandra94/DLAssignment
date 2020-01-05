@@ -967,9 +967,9 @@ class CustomDetectionUtils:
             print(box)
             i = np.argmax(box.classes)
             v_boxes.append(box)
-            v_labels.append(box.labels[i])
+            v_labels.append(labels[i])
             
-            v_scores.append(box.classes[i])
+            v_scores.append(box.classes[i] * 100)
             # enumerate all possible labels
 #            for i in range(len(labels)):
 #                i
